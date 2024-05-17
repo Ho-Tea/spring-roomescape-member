@@ -34,7 +34,7 @@ public class AdminController {
             @RequestBody @Valid final AdminReservationRequestDto request) {
         ReservationResponseDto responseDto = new ReservationResponseDto(
                 reservationService.save(
-                        memberService.findById(request.memberId()),
+                        memberService.getById(request.memberId()),
                         request.timeId(), request.themeId(), request.date()));
         return ResponseEntity.created(URI.create("reservations/" + responseDto.id())).body(responseDto);
     }

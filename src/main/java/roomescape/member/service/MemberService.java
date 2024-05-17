@@ -19,7 +19,7 @@ public class MemberService {
         this.passwordEncryptor = passwordEncryptor;
     }
 
-    public Member findById(final Long id) {
+    public Member getById(final Long id) {
         return memberDao.getById(id);
     }
 
