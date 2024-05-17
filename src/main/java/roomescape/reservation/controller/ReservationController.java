@@ -43,7 +43,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> save(@RequestBody @Valid final ReservationRequestDto request, @AuthenticatedMember Member member) {
-        ReservationResponseDto responseDto = new ReservationResponseDto(reservationService.save(member, request));
+        ReservationResponseDto responseDto = new ReservationResponseDto(reservationService.save(member, request.timeId(), request.themeId(), request.date()));
         return ResponseEntity.created(URI.create("/reservations/" + responseDto.id())).body(responseDto);
     }
 

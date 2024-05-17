@@ -9,7 +9,6 @@ import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.time.dao.ReservationTimeDao;
@@ -34,10 +33,11 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
-    public Reservation save(final Member member, final ReservationRequestDto requestDto) {
-        final ReservationTime reservationTime = reservationTimeDao.getById(requestDto.timeId());
-        final Theme theme = themeDao.getById(requestDto.themeId());
-        final Reservation reservation = requestDto.toReservation(member, reservationTime, theme);
+    public Reservation save(final Member member, final long timeId, final long themeId, final String date) {
+        final ReservationTime reservationTime = reservationTimeDao.getById(timeId);
+        final Theme theme = themeDao.getById(themeId);
+        final ReservationDate reservationDate = new ReservationDate(date);
+        final Reservation reservation = new Reservation(member, reservationDate, reservationTime, theme);
 
         validateReservationAvailable(reservation);
 
