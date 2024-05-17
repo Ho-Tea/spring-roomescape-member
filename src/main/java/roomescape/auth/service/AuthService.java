@@ -33,7 +33,7 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Member extractMemberOf(final String token) {
+    public Member extractMemberBy(final String token) {
         if (jwtTokenProvider.verifyTokenAvailable(token)) {
             throw new UnAuthorizationException("기한이 유효하지 않은 토큰입니다.");
         }

@@ -37,7 +37,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) {
         String[] cookies = webRequest.getHeaderValues(HttpHeaders.COOKIE);
         String token = getTokenByCookies(cookies);
-        return authService.extractMemberOf(token);
+        return authService.extractMemberBy(token);
     }
 
     private String getTokenByCookies(final String[] cookies) {
