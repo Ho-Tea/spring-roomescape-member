@@ -15,6 +15,8 @@ import roomescape.exception.UnAuthorizationException;
 import roomescape.member.domain.Member;
 
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
+    private static final String AUTHORIZATION = "token";
+    private static final String DELIMITER = ";";
     private final AuthService authService;
 
     public LoginArgumentResolver(AuthService authService) {
@@ -34,19 +36,19 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
         String[] cookies = webRequest.getHeaderValues(HttpHeaders.COOKIE);
-        String token = getTokenBy(cookies);
+        String token = getTokenByCookies(cookies);
         return authService.extractMemberOf(token);
     }
 
-    private String getTokenBy(final String[] cookies) {
+    private String getTokenByCookies(final String[] cookies) {
         if (cookies == null) {
             throw new UnAuthorizationException("쿠키가 존재하지 않습니다.");
         }
-        String token = Arrays.stream(cookies[0].split(";"))
+        String token = Arrays.stream(cookies[0].split(DELIMITER))
                 .map(String::trim)
-                .filter(cookie -> cookie.startsWith("token"))
+                .filter(cookie -> cookie.startsWith(AUTHORIZATION))
                 .findFirst()
                 .orElseThrow(() -> new UnAuthorizationException("토큰이 존재하지 않습니다."));
-        return token.substring("token=".length());
+        return token.substring(AUTHORIZATION.length() + 1);
     }
 }

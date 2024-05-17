@@ -16,6 +16,8 @@ import roomescape.exception.UnAuthorizationException;
 import roomescape.member.domain.Role;
 
 public class AdminInterceptor implements HandlerInterceptor {
+    private static final String AUTHORIZATION = "token";
+    private static final String DELIMITER = ";";
     private final AuthService adminService;
 
     public AdminInterceptor(final AuthService adminService) {
@@ -26,13 +28,13 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String cookie = request.getHeader(HttpHeaders.COOKIE);
         validateValueIsNotNull(cookie);
-        String token = getTokenBy(cookie);
+        String token = getTokenByCookie(cookie);
         validateValueIsNotNull(token);
         return checkAdmin(token);
     }
 
     private boolean checkAdmin(final String token) {
-        Role role = adminService.extractMemberOf(token.substring("token=".length())).getRole();
+        Role role = adminService.extractMemberOf(token.substring(AUTHORIZATION.length() + 1)).getRole();
         if (role == Role.ADMIN) {
             return true;
         }
@@ -45,10 +47,10 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
     }
 
-    private String getTokenBy(final String cookie) {
-        return Arrays.stream(cookie.split(";"))
+    private String getTokenByCookie(final String cookie) {
+        return Arrays.stream(cookie.split(DELIMITER))
                 .map(String::trim)
-                .filter(it -> it.startsWith("token"))
+                .filter(it -> it.startsWith(AUTHORIZATION))
                 .findFirst()
                 .orElse(null);
     }
