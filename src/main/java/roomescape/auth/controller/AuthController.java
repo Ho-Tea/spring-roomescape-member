@@ -20,6 +20,11 @@ import roomescape.member.domain.Member;
 
 @RestController
 public class AuthController {
+    private static final long VALID_TIME = 3600;
+    private static final long INVALID_TIME = 0;
+    private static final String AUTHORIZATION = "token";
+    private static final String REDIRECT_URI = "/";
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -29,10 +34,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         String token = authService.login(loginRequestDto);
-        ResponseCookie cookie = ResponseCookie.from("token", token)
+        ResponseCookie cookie = ResponseCookie.from(AUTHORIZATION, token)
                 .httpOnly(true)
-                .path("/")
-                .maxAge(3600)
+                .path(REDIRECT_URI)
+                .maxAge(VALID_TIME)
                 .build();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -48,8 +53,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from("token", null)
-                .maxAge(0)
+        ResponseCookie cookie = ResponseCookie.from(AUTHORIZATION, null)
+                .maxAge(INVALID_TIME)
                 .build();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
