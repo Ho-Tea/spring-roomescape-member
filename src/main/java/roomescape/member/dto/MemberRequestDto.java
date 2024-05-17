@@ -1,5 +1,7 @@
 package roomescape.member.dto;
 
+import java.util.Objects;
+
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,10 +23,17 @@ public record MemberRequestDto(
         this.email = email;
         this.password = password;
         this.name = name;
-        this.role = role == null ? Role.USER : role;
+        this.role = injectRole(role);
     }
 
     public Member toMemberOf(final String password) {
         return new Member(email, password, name, role);
+    }
+
+    private Role injectRole(final Role role) {
+        if (Objects.isNull(role)) {
+            return Role.USER;
+        }
+        return role;
     }
 }
