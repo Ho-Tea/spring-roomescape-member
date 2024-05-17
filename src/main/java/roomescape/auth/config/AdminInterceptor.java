@@ -23,7 +23,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String cookie = request.getHeader(HttpHeaders.COOKIE);
         validateValueIsNotNull(cookie);
         String token = getTokenBy(cookie);
@@ -32,15 +32,11 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     private boolean checkAdmin(final String token) {
-        try {
-            Role role = adminService.extractMemberOf(token.substring("token=".length())).getRole();
-            if (role == Role.ADMIN) {
-                return true;
-            }
-        } catch (UnAuthorizationException e) {
-            throw new UnAuthorizationException("접근 권한이 없는 사용자입니다.");
+        Role role = adminService.extractMemberOf(token.substring("token=".length())).getRole();
+        if (role == Role.ADMIN) {
+            return true;
         }
-        throw new ForbiddenException("인증되지 않은 사용자입니다.");
+        throw new ForbiddenException("접근 권한이 없는 사용자입니다.");
     }
 
     private void validateValueIsNotNull(final String value) {
